@@ -88,6 +88,7 @@ public class ServiceGame extends javax.swing.JFrame {
         );
 
         jButton2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jButton2.setForeground(new java.awt.Color(255, 0, 51));
         jButton2.setText("Chấp nhận");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
