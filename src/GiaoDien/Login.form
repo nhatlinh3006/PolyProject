@@ -65,12 +65,12 @@
                           <EmptySpace pref="25" max="32767" attributes="0"/>
                           <Component id="jLabel2" min="-2" pref="122" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jTextField1" max="32767" attributes="0"/>
+                      <Component id="txtMaNV" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Component id="jLabel4" min="-2" pref="72" max="-2" attributes="0"/>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
-                      <Component id="jPasswordField1" max="32767" attributes="0"/>
+                      <Component id="txtMatKhau" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -89,11 +89,11 @@
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="jTextField1" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtMaNV" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="jPasswordField1" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtMatKhau" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
@@ -121,7 +121,7 @@
             <Property name="text" type="java.lang.String" value="T&#xe0;i kho&#x1ea3;n :"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField1">
+        <Component class="javax.swing.JTextField" name="txtMaNV">
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel4">
           <Properties>
@@ -131,7 +131,7 @@
             <Property name="text" type="java.lang.String" value="M&#x1ead;t kh&#x1ea9;u :"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JPasswordField" name="jPasswordField1">
+        <Component class="javax.swing.JPasswordField" name="txtMatKhau">
         </Component>
         <Component class="javax.swing.JButton" name="jButton1">
           <Properties>
@@ -148,6 +148,9 @@
               </Border>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
