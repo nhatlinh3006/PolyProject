@@ -5,31 +5,36 @@
  */
 package GiaoDien;
 
+import Model.NhanVien;
 import help.DialogHelper;
+import help.ShareHelper;
 
 /**
  *
  * @author Admin
  */
 public class Login extends javax.swing.JFrame {
-
+    
     /**
      * Creates new form Login
      */
     public Login() {
         initComponents();
     }
-public boolean isvalid() {
+
+    public boolean isvalid() {
         if (txtMaNV.getText().length() == 0) {
             DialogHelper.alert(this, "Vui lòng nhập tên đăng nhập!");
             return false;
         }
         return true;
     }
- void init() {
+
+    void init() {
         setLocationRelativeTo(null);
     }
- void login() {
+
+    void login() {
         String manv = txtMaNV.getText();
         String matKhau = new String(txtMatKhau.getPassword());
         try {
@@ -50,7 +55,6 @@ public boolean isvalid() {
             DialogHelper.alert(this, "Lỗi truy vấn dữ liệu!");
         }
     }
- 
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -158,7 +162,7 @@ public boolean isvalid() {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-         if (this.isvalid()) {
+        if (this.isvalid()) {
             this.login();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
