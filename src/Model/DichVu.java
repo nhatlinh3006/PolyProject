@@ -15,8 +15,7 @@ public class DichVu {
      private String maMay;
     private String maKH;
     private String gia;
-   
-
+  
     @Override
     public String toString() {
         return this.tenDV;
@@ -72,6 +71,5 @@ public class DichVu {
     public void setGia(String gia) {
         this.gia = gia;
     }
-
-   
+ 
 }

@@ -53,5 +53,4 @@ public class NhanVien {
         this.tenNV = tenNV;
     }
 
-
 }

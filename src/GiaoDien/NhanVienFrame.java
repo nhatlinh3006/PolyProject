@@ -50,7 +50,7 @@ public class NhanVienFrame extends javax.swing.JFrame {
         btnLast = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         btnThem.setText("THÊM");
         btnThem.addActionListener(new java.awt.event.ActionListener() {

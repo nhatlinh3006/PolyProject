@@ -5,7 +5,6 @@
  */
 package DAO;
 
-
 import Model.TaiKhoan;
 import help.jdbc;
 import java.sql.ResultSet;
@@ -32,8 +31,7 @@ public class TaiKhoanDAO {
         jdbc.executeUpdate(sql,
                 model.getMaTK(),
                 model.getTenTK(),
-                model.getMatKhau() );        
-                
+                model.getMatKhau() );                      
     }
 
     public void delete(String MaTK) {

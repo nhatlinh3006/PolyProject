@@ -56,7 +56,7 @@ public class DichVuFrame extends javax.swing.JFrame {
 
         jLabel6.setText("MÃ KHÁCH HÀNG");
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         btnLast.setText(">|");
         btnLast.addActionListener(new java.awt.event.ActionListener() {

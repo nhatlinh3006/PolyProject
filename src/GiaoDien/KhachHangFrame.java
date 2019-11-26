@@ -48,7 +48,7 @@ public class KhachHangFrame extends javax.swing.JFrame {
         tblGridView = new javax.swing.JTable();
         btnPrev = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         btnNext.setText(">");
         btnNext.addActionListener(new java.awt.event.ActionListener() {

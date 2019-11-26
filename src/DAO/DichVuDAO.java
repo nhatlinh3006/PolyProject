@@ -12,10 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Admin
- */
+
 public class DichVuDAO {
      public void insert(DichVu model) {
         String sql = "INSERT INTO DichVu (MaDV, TenDV, MaMay, MaKH,Gia) VALUES (?, ?, ?, ?, ?)";

@@ -5,7 +5,13 @@
  */
 package GiaoDien;
 
+import help.DialogHelper;
 import help.ShareHelper;
+import java.awt.Desktop;
+
+import java.io.File;
+import java.io.IOException;
+
 
 /**
  *
@@ -16,14 +22,102 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainFrame
      */
+   
+    
+       
+   
     public MainFrame() {
+       
+        new DangNhapDialog(this, true).setVisible(true);
         initComponents();
+     
     }
-     void logoff() {
+
+    
+    void init() {
+      
+    }
+
+    void openLogin() {
+        new DangNhapDialog(this, true).setVisible(true);
+    }
+
+    void logoff() {
         ShareHelper.logoff();
         this.openLogin();
     }
 
+    void exit() {
+        if (DialogHelper.confirm(this, "Bạn thực sự muốn kết thúc?")) {
+            System.exit(0);
+        }
+    }
+
+    
+
+    void openNhanVien() {
+        if (ShareHelper.authenticated()) {
+            new NhanVienFrame().setVisible(true);
+        } else {
+            DialogHelper.alert(this, "Vui lòng đăng nhập!");
+        }
+    }
+
+    void openDichVu(){
+         if (ShareHelper.authenticated()) {
+            new DichVuFrame().setVisible(true);
+        } else {
+            DialogHelper.alert(this, "Vui lòng đăng nhập!");
+        }
+    }
+    
+     void openKhachHang(){
+         if (ShareHelper.authenticated()) {
+            new KhachHangFrame().setVisible(true);
+        } else {
+            DialogHelper.alert(this, "Vui lòng đăng nhập!");
+        }
+    }
+      void openMay(){
+         if (ShareHelper.authenticated()) {
+            new MayFrame().setVisible(true);
+        } else {
+            DialogHelper.alert(this, "Vui lòng đăng nhập!");
+        }
+    }
+       void openThongKe(){
+         if (ShareHelper.authenticated()) {
+            new ThongKeFrame().setVisible(true);
+        } else {
+            DialogHelper.alert(this, "Vui lòng đăng nhập!");
+        }
+    }
+        void openMenuGame(){
+         if (ShareHelper.authenticated()) {
+            new MenuGame().setVisible(true);
+        } else {
+            DialogHelper.alert(this, "Vui lòng đăng nhập!");
+        }
+    }
+ void openTaiKhoan(){
+         if (ShareHelper.authenticated()) {
+            new TaiKhoanFrame().setVisible(true);
+        } else {
+            DialogHelper.alert(this, "Vui lòng đăng nhập!");
+        }
+    }
+    
+
+    
+
+    
+    void openWebsite() {
+        try {
+            Desktop.getDesktop().browse(new File("help/index.html").toURI());
+        } catch (IOException ex) {
+            DialogHelper.alert(this, "Không tìm thấy file hướng dẫn!");
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -86,6 +180,11 @@ public class MainFrame extends javax.swing.JFrame {
         jButton2.setFocusable(false);
         jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButton2);
 
         jButton3.setForeground(new java.awt.Color(255, 0, 0));
@@ -94,6 +193,11 @@ public class MainFrame extends javax.swing.JFrame {
         jButton3.setFocusable(false);
         jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButton3);
 
         jButton4.setForeground(new java.awt.Color(255, 0, 51));
@@ -102,6 +206,11 @@ public class MainFrame extends javax.swing.JFrame {
         jButton4.setFocusable(false);
         jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButton4);
 
         jButton5.setForeground(new java.awt.Color(255, 0, 51));
@@ -118,6 +227,11 @@ public class MainFrame extends javax.swing.JFrame {
         jButton6.setFocusable(false);
         jButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButton6);
 
         jButton7.setForeground(new java.awt.Color(255, 0, 51));
@@ -126,6 +240,11 @@ public class MainFrame extends javax.swing.JFrame {
         jButton7.setFocusable(false);
         jButton7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButton7);
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/1.PNG"))); // NOI18N
@@ -166,6 +285,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuItem6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Edit.png"))); // NOI18N
         jMenuItem6.setText("Thống kê");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem6);
 
         jMenuItem7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Payment.png"))); // NOI18N
@@ -183,10 +307,20 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuItem11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Funny.png"))); // NOI18N
         jMenuItem11.setText("Nhân VIên");
+        jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem11ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem11);
 
         jMenuItem12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/Friends.png"))); // NOI18N
         jMenuItem12.setText("Tài Khoản");
+        jMenuItem12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem12ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem12);
 
         jMenuBar1.add(jMenu3);
@@ -246,7 +380,48 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
         // TODO add your handling code here:
+        openKhachHang();
     }//GEN-LAST:event_jMenuItem10ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        openDichVu();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        openMenuGame();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        openThongKe();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // TODO add your handling code here:
+        openMay();
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // TODO add your handling code here:
+        openTaiKhoan();
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        // TODO add your handling code here:
+        openThongKe();
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
+        // TODO add your handling code here:
+        openNhanVien();
+    }//GEN-LAST:event_jMenuItem11ActionPerformed
+
+    private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
+        // TODO add your handling code here:
+        openTaiKhoan();
+    }//GEN-LAST:event_jMenuItem12ActionPerformed
 
     /**
      * @param args the command line arguments

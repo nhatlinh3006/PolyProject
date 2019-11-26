@@ -25,7 +25,7 @@ public class ShareHelper {
 
     static {
         // Tải biểu tượng ứng dụng
-        String file = "/Lab1/Hinh/fpt.png";
+        String file = "/Image/Funny.png";
         APP_ICON = new ImageIcon(ShareHelper.class.getResource(file)).getImage();
     }
 

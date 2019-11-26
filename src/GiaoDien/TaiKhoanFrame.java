@@ -48,7 +48,7 @@ public class TaiKhoanFrame extends javax.swing.JFrame {
         tblGridView = new javax.swing.JTable();
         jLabel6 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         btnLast.setText(">|");
         btnLast.addActionListener(new java.awt.event.ActionListener() {
