@@ -80,5 +80,10 @@ public class DichVuDAO {
         model.setGia(rs.getString("Gia")); 
         return model;
     }
+    
+     public List<DichVu> selectByKeyword(String keyword) {
+        String sql = "SELECT * FROM DichVu WHERE TenDV LIKE ?";
+        return select(sql, "%" + keyword + "%");
+    }
 }
 

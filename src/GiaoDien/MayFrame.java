@@ -5,6 +5,25 @@
  */
 package GiaoDien;
 
+import DAO.DichVuDAO;
+import DAO.MayDAO;
+import Model.DichVu;
+import Model.May;
+import help.DialogHelper;
+import help.ShareHelper;
+import help.jdbc;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.List;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+import java.sql.*;
+import javax.swing.*;
+import help.jdbc;
+
+
 /**
  *
  * @author Admin
@@ -16,8 +35,89 @@ public class MayFrame extends javax.swing.JFrame {
      */
     public MayFrame() {
         initComponents();
+        init();
+      
+    }
+ void init() {
+        
+        setLocationRelativeTo(null);
+    }
+    
+     int index = 0;
+    MayDAO dao = new MayDAO();
+    
+    void load() {
+        DefaultTableModel model = (DefaultTableModel) tblGridView.getModel();
+        model.setRowCount(0);
+        try {
+            List<May> list = dao.select();
+            for (May may : list) {
+                Object[] row = {
+                    may.getMaMay(),                 
+                    may.getMaNV(),
+                    may.getMaKH(),
+                    may.getGioChoi()};
+                model.addRow(row);
+            }
+        } catch (Exception e) {
+            System.out.println("er"+e);
+            DialogHelper.alert(this, "Lỗi truy vấn dữ liệu!");
+        }
+    }
+    
+   MayDAO maydao = new MayDAO();
+     
+   void fillComboBox() {
+        DefaultComboBoxModel model = (DefaultComboBoxModel) cboMay.getModel();
+        model.removeAllElements();
+        try {
+            List<May> list = maydao.select();
+            for (May cd : list) {
+                model.addElement(cd);
+            }
+        } catch (Exception e) {
+            DialogHelper.alert(this, "Lỗi truy vấn dữ liệu!");
+        }
+    }
+   
+   
+    void selectComboBox() {
+        May may = (May) cboMay.getSelectedItem();
+       
+    }
+    
+     void edit() {
+
+        try {
+            Integer mamay = (Integer) tblGridView.getValueAt(this.index, 0);
+            May model = dao.findById(mamay);
+            if (model != null) {
+                this.setModel(model);
+                this.setStatus(false);
+            }
+        } catch (Exception e) {
+            DialogHelper.alert(this, "Lỗi truy vấn dữ liệu!");
+        }
+
+    }
+     
+      void setModel(May model) {
+        cboMay.setToolTipText(String.valueOf(model.getMaMay()));
+       
+       
     }
 
+    May getModel() {
+        May model = new May();
+        
+
+        return model;
+    }
+
+    void setStatus(boolean insertable) {
+        
+    }
+   
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -33,11 +133,16 @@ public class MayFrame extends javax.swing.JFrame {
         tblGridView = new javax.swing.JTable();
         btnCapNhat = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        cboNguoiHoc = new javax.swing.JComboBox();
+        cboMay = new javax.swing.JComboBox();
         txtDiem = new javax.swing.JTextField();
         btnThem = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 51, 51));
@@ -57,6 +162,11 @@ public class MayFrame extends javax.swing.JFrame {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        tblGridView.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblGridViewMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(tblGridView);
@@ -93,13 +203,21 @@ public class MayFrame extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        cboMay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboMayActionPerformed(evt);
+            }
+        });
+
         txtDiem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtDiemActionPerformed(evt);
             }
         });
 
-        btnThem.setText("Thêm");
+        btnThem.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnThem.setForeground(new java.awt.Color(255, 51, 51));
+        btnThem.setText("THÊM");
         btnThem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnThemActionPerformed(evt);
@@ -112,7 +230,7 @@ public class MayFrame extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addComponent(cboNguoiHoc, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cboMay, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtDiem, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -125,8 +243,8 @@ public class MayFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnThem, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
-                    .addComponent(cboNguoiHoc)
-                    .addComponent(txtDiem))
+                    .addComponent(txtDiem)
+                    .addComponent(cboMay))
                 .addContainerGap())
         );
 
@@ -134,7 +252,7 @@ public class MayFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 465, Short.MAX_VALUE)
+            .addGap(0, 479, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
@@ -177,6 +295,27 @@ public class MayFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnThemActionPerformed
 
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+       this.fillComboBox();
+          this.load();
+       
+    }//GEN-LAST:event_formWindowOpened
+
+    private void cboMayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboMayActionPerformed
+        // TODO add your handling code here:
+         selectComboBox();
+    }//GEN-LAST:event_cboMayActionPerformed
+
+    private void tblGridViewMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblGridViewMouseClicked
+        // TODO add your handling code here:
+         if (evt.getClickCount() == 2) {
+            this.index = tblGridView.rowAtPoint(evt.getPoint());
+            if (this.index >= 0) {
+                this.edit();
+            }
+        }
+    }//GEN-LAST:event_tblGridViewMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -215,7 +354,7 @@ public class MayFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCapNhat;
     private javax.swing.JButton btnThem;
-    private javax.swing.JComboBox cboNguoiHoc;
+    private javax.swing.JComboBox cboMay;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

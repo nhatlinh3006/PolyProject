@@ -14,10 +14,13 @@ public class May {
  private String maKH;
  private String maNV;
  private String gioChoi;
- @Override
- public String toString() {
- return this.toString();
- }
+
+    @Override
+    public String toString() {
+        return this.maMay;
+    }
+
+ 
 
     public May() {
     }

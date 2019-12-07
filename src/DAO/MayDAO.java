@@ -73,10 +73,12 @@ public class MayDAO {
 
     private May readFromResultSet(ResultSet rs) throws SQLException {
         May model = new May();
-        model.setMaMay(rs.getString("MaHV"));
-        model.setMaKH(rs.getString("KH"));
-        model.setMaNV(rs.getString("MaNH"));
-        model.setGioChoi(rs.getString("Diem"));
+        model.setMaMay(rs.getString("MaMay"));
+        model.setMaKH(rs.getString("MaKH"));
+        model.setMaNV(rs.getString("MaNV"));
+        model.setGioChoi(rs.getString("GioChoi"));
         return model;
     }
+    
+    
 }

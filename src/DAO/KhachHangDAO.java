@@ -41,7 +41,7 @@ public class KhachHangDAO {
         jdbc.executeUpdate(sql, MaKH);
     }
 
-    public List<KhachHang> select() {
+    public List<KhachHang> select() {        
         String sql = "SELECT * FROM KhachHang";
         return select(sql);
     }
@@ -74,7 +74,7 @@ public class KhachHangDAO {
     private KhachHang readFromResultSet(ResultSet rs) throws SQLException {
         KhachHang model = new KhachHang();
         model.setMaKH(rs.getString("MaKH"));
-        model.setTenTK(rs.getString("TenKH"));
+        model.setTenTK(rs.getString("TenTK"));
         model.setMatKhau(rs.getString("MatKhau")); 
         return model;
     }

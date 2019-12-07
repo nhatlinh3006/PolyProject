@@ -5,6 +5,16 @@
  */
 package GiaoDien;
 
+import DAO.DichVuDAO;
+import DAO.TaiKhoanDAO;
+import Model.DichVu;
+import Model.TaiKhoan;
+import help.DialogHelper;
+import help.ShareHelper;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Admin
@@ -16,6 +26,143 @@ public class TaiKhoanFrame extends javax.swing.JFrame {
      */
     public TaiKhoanFrame() {
         initComponents();
+        init();
+    }
+
+    void init() {
+       setSize(600,600);
+        setLocationRelativeTo(null);
+    }
+
+    int index = 0;
+    TaiKhoanDAO dao = new TaiKhoanDAO();
+
+    void load() {
+        DefaultTableModel model = (DefaultTableModel) tblGridView.getModel();
+        model.setRowCount(0);
+        try {
+            List<TaiKhoan> list = dao.select();
+            for (TaiKhoan tk : list) {
+                Object[] row = {
+                    tk.getMaTK(),
+                    tk.getTenTK(),
+                    tk.getMatKhau()};
+
+                model.addRow(row);
+            }
+        } catch (Exception e) {
+            System.out.println("er"+e);
+            DialogHelper.alert(this, "Lỗi truy vấn dữ liệu!");
+        }
+    }
+
+    public boolean kt() {
+        if (txtMaTK.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "MaTK ko dc bo trong");
+            return false;
+        }
+        if (txtTenTK.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tên TK ko dc bo trong");
+            return false;
+        }
+        if (txtMatKhau.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mat khau ko dc bo trong");
+            return false;
+        }
+
+        return true;
+    }
+
+    void insert() {
+
+        if (kt()) {
+            TaiKhoan model = getModel();
+            try {
+                dao.insert(model);
+                this.load();
+                this.clear();
+                DialogHelper.alert(this, "Thêm mới thành công!");
+            } catch (Exception e) {
+                DialogHelper.alert(this, "Thêm mới thất bại!");
+            }
+        }
+    }
+
+    void update() {
+        if (kt()) {
+            TaiKhoan model = getModel();
+            try {
+                dao.update(model);
+                this.load();
+                DialogHelper.alert(this, "Cập nhật thành công!");
+            } catch (Exception e) {
+                DialogHelper.alert(this, "Cập nhật thất bại!");
+            }
+        }
+    }
+
+    void delete() {
+        if (DialogHelper.confirm(this, "Bạn thực sự muốn xóa tai khoan này?")) {
+            String matk = txtMaTK.getText();
+            try {
+                dao.delete(matk);
+                this.load();
+                this.clear();
+                DialogHelper.alert(this, "Xóa thành công!");
+            } catch (Exception e) {
+                DialogHelper.alert(this, "Xóa thất bại!");
+            }
+        }
+    }
+
+    void edit() {
+        try {
+            String matk = (String) tblGridView.getValueAt(this.index, 0);
+            TaiKhoan model = dao.findById(matk);
+            if (model != null) {
+                this.setModel(model);
+                this.setStatus(false);
+            }
+        } catch (Exception e) {
+            DialogHelper.alert(this, "Lỗi truy vấn dữ liệu!");
+        }
+    }
+
+    void clear() {
+//        this.setModel(new NhanVien());
+//        this.setStatus(true);
+        txtMaTK.setText("");
+        txtTenTK.setText("");
+        txtMatKhau.setText("");
+
+    }
+
+    void setModel(TaiKhoan model) {
+        txtMaTK.setText(model.getMaTK());
+        txtTenTK.setText(model.getTenTK());
+        txtMatKhau.setText(model.getMatKhau());
+
+    }
+
+    TaiKhoan getModel() {
+        TaiKhoan model = new TaiKhoan();
+        model.setMaTK(txtMaTK.getText());
+        model.setTenTK(txtTenTK.getText());
+        model.setMatKhau(txtMatKhau.getText());
+
+        return model;
+    }
+
+    void setStatus(boolean insertable) {
+        txtMaTK.setEditable(insertable);
+        btnThem.setEnabled(insertable);
+
+        boolean first = this.index > 0;
+        boolean last = this.index < tblGridView.getRowCount() - 1;
+        btnFirst.setEnabled(!insertable && first);
+        btnPrev.setEnabled(!insertable && first);
+        btnNext.setEnabled(!insertable && last);
+        btnLast.setEnabled(!insertable && last);
     }
 
     /**
@@ -38,17 +185,22 @@ public class TaiKhoanFrame extends javax.swing.JFrame {
         tabs = new javax.swing.JTabbedPane();
         pnlEdit = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        txtManv = new javax.swing.JTextField();
+        txtMaTK = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         txtMatKhau = new javax.swing.JPasswordField();
-        txtXacnhanmk = new javax.swing.JPasswordField();
+        txtTenTK = new javax.swing.JTextField();
         pnlList = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblGridView = new javax.swing.JTable();
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         btnLast.setText(">|");
         btnLast.addActionListener(new java.awt.event.ActionListener() {
@@ -108,15 +260,15 @@ public class TaiKhoanFrame extends javax.swing.JFrame {
 
         tabs.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jLabel2.setText("TÊN TÀI KHOẢN");
+        jLabel2.setText("MÃ TÀI KHOẢN");
 
-        jLabel3.setText("MẬT KHẨU");
+        jLabel3.setText("TÊN TÀI KHOẢN");
 
-        jLabel4.setText("NHẬP LẠI MẬT KHẨU");
+        jLabel4.setText("MẬT KHẨU");
 
-        txtXacnhanmk.addActionListener(new java.awt.event.ActionListener() {
+        txtMatKhau.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtXacnhanmkActionPerformed(evt);
+                txtMatKhauActionPerformed(evt);
             }
         });
 
@@ -127,16 +279,15 @@ public class TaiKhoanFrame extends javax.swing.JFrame {
             .addGroup(pnlEditLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtManv)
+                    .addComponent(txtMaTK)
                     .addGroup(pnlEditLayout.createSequentialGroup()
                         .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
                             .addComponent(jLabel4)
-                            .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(txtXacnhanmk, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
-                                .addComponent(txtMatKhau, javax.swing.GroupLayout.Alignment.LEADING)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(txtMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, 553, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(txtTenTK))
                 .addContainerGap())
         );
         pnlEditLayout.setVerticalGroup(
@@ -145,15 +296,15 @@ public class TaiKhoanFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtManv, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtMaTK, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addGap(18, 18, 18)
-                .addComponent(txtMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtTenTK, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(11, 11, 11)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtXacnhanmk, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
@@ -164,11 +315,11 @@ public class TaiKhoanFrame extends javax.swing.JFrame {
 
             },
             new String [] {
-                "TÊN TÀI KHOẢN", "MẬT KHẨU"
+                "MÃ TÀI KHOẢN", "TÊN TÀI KHOẢN", "MẬT KHẨU"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false
+                false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -195,7 +346,7 @@ public class TaiKhoanFrame extends javax.swing.JFrame {
             pnlListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlListLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -264,53 +415,69 @@ public class TaiKhoanFrame extends javax.swing.JFrame {
 
     private void btnLastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLastActionPerformed
         // TODO add your handling code here:
-
+        this.index = tblGridView.getRowCount() - 1;
+        this.edit();
     }//GEN-LAST:event_btnLastActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
         // TODO add your handling code here:
-
+        insert();
     }//GEN-LAST:event_btnThemActionPerformed
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
         // TODO add your handling code here:
-
+        update();
     }//GEN-LAST:event_btnSuaActionPerformed
 
     private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
 
         // TODO add your handling code here:
-
+        delete();
     }//GEN-LAST:event_btnXoaActionPerformed
 
     private void btnPrevActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrevActionPerformed
         // TODO add your handling code here:
-
+        this.index--;
+        this.edit();
     }//GEN-LAST:event_btnPrevActionPerformed
 
     private void btnMoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoiActionPerformed
         // TODO add your handling code here:
-
+        clear();
     }//GEN-LAST:event_btnMoiActionPerformed
 
     private void btnNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNextActionPerformed
         // TODO add your handling code here:
-
+        this.index++;
+        this.edit();
     }//GEN-LAST:event_btnNextActionPerformed
 
     private void btnFirstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFirstActionPerformed
         // TODO add your handling code here:
-
+        this.index = 0;
+        this.edit();
     }//GEN-LAST:event_btnFirstActionPerformed
 
-    private void txtXacnhanmkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtXacnhanmkActionPerformed
+    private void txtMatKhauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMatKhauActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtXacnhanmkActionPerformed
+    }//GEN-LAST:event_txtMatKhauActionPerformed
 
     private void tblGridViewMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblGridViewMouseClicked
         // TODO add your handling code here:
-
+        if (evt.getClickCount() == 2) {
+            this.index = tblGridView.rowAtPoint(evt.getPoint());
+            if (this.index >= 0) {
+                this.edit();
+                tabs.setSelectedIndex(0);
+            }
+        }
     }//GEN-LAST:event_tblGridViewMouseClicked
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        this.load();
+        this.setStatus(true);
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments
@@ -365,8 +532,8 @@ public class TaiKhoanFrame extends javax.swing.JFrame {
     private javax.swing.JPanel pnlList;
     private javax.swing.JTabbedPane tabs;
     private javax.swing.JTable tblGridView;
-    private javax.swing.JTextField txtManv;
+    private javax.swing.JTextField txtMaTK;
     private javax.swing.JPasswordField txtMatKhau;
-    private javax.swing.JPasswordField txtXacnhanmk;
+    private javax.swing.JTextField txtTenTK;
     // End of variables declaration//GEN-END:variables
 }

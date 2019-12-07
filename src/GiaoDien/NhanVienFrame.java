@@ -5,6 +5,14 @@
  */
 package GiaoDien;
 
+import DAO.NhanVienDAO;
+import Model.NhanVien;
+import help.DialogHelper;
+import help.ShareHelper;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Admin
@@ -14,8 +22,161 @@ public class NhanVienFrame extends javax.swing.JFrame {
     /**
      * Creates new form NhanVienFrame
      */
+     int index = 0; // vị trí của nhân viên đang hiển thị trên form
+    NhanVienDAO dao = new NhanVienDAO();
+
+    void init() {
+      
+        setSize(600,600);
+       
+        setLocationRelativeTo(null);
+    }
+
+    public boolean kt() {
+        if (txtManv.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "MaNV ko dc bo trong");
+            return false;
+        }
+        if (txtMatKhau.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mat khau ko dc bo trong");
+            return false;
+        }
+        String x = txtXacnhanmk.getText();
+        if (!txtMatKhau.getText().equals(x)) {
+            JOptionPane.showMessageDialog(this, "2 truong  mat khau  ko trung nhau");
+            return false;
+        }
+        if (txtHovaten.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ho Ten ko dc bo trong");
+            return false;
+        }
+        return true;
+    }
+
+    void load() {
+        DefaultTableModel model = (DefaultTableModel) tblGridView.getModel();
+        model.setRowCount(0);
+        try {
+            List<NhanVien> list = dao.select();
+            for (NhanVien nv : list) {
+                Object[] row = {
+                    nv.getMaNV(),
+                    nv.getMatKhau(),
+                    nv.getTenNV(),
+                  };
+                model.addRow(row);
+            }
+        } catch (Exception e) {
+            DialogHelper.alert(this, "Lỗi truy vấn dữ liệu!");
+        }
+    }
+
+    void insert() {
+        if (kt()) {
+            NhanVien model = getModel();
+            String confirm = new String(txtXacnhanmk.getPassword());
+            if (confirm.equals(model.getMatKhau())) {
+                try {
+                    dao.insert(model);
+                    this.load();
+                    this.clear();
+                    DialogHelper.alert(this, "Thêm mới thành công!");
+                } catch (Exception e) {
+                    DialogHelper.alert(this, "Thêm mới thất bại!");
+                }
+            } else {
+                DialogHelper.alert(this, "Xác nhận mật khẩu không đúng!");
+            }
+        }
+    }
+
+    void update() {
+        if (kt()) {
+            NhanVien model = getModel();
+            String confirm = new String(txtXacnhanmk.getPassword());
+            if (!confirm.equals(model.getMatKhau())) {
+                DialogHelper.alert(this, "Xác nhận mật khẩu không đúng!");
+            } else {
+                try {
+                    dao.update(model);
+                    this.load();
+                    DialogHelper.alert(this, "Cập nhật thành công!");
+                } catch (Exception e) {
+                    DialogHelper.alert(this, "Cập nhật thất bại!");
+                }
+            }
+        }
+    }
+
+    void delete() {
+        if (DialogHelper.confirm(this, "Bạn thực sự muốn xóa nhân viên này?")) {
+            String manv = txtManv.getText();
+            try {
+                dao.delete(manv);
+                this.load();
+                this.clear();
+                DialogHelper.alert(this, "Xóa thành công!");
+            } catch (Exception e) {
+                DialogHelper.alert(this, "Xóa thất bại!");
+            }
+        }
+    }
+
+    void edit() {
+        try {
+            String manv = (String) tblGridView.getValueAt(this.index, 0);
+            NhanVien model = dao.findById(manv);
+            if (model != null) {
+                this.setModel(model);
+                this.setStatus(false);
+            }
+        } catch (Exception e) {
+            DialogHelper.alert(this, "Lỗi truy vấn dữ liệu!");
+        }
+    }
+
+    void clear() {
+//        this.setModel(new NhanVien());
+//        this.setStatus(true);
+        txtManv.setText("");
+        txtMatKhau.setText("");
+        txtXacnhanmk.setText("");
+        txtHovaten.setText("");
+       
+    }
+
+    void setModel(NhanVien model) {
+        txtManv.setText(model.getMaNV());
+        txtHovaten.setText(model.getTenNV());
+        txtMatKhau.setText(model.getMatKhau());
+        txtXacnhanmk.setText(model.getMatKhau());
+       
+    }
+
+    NhanVien getModel() {
+        NhanVien model = new NhanVien();
+        model.setMaNV(txtManv.getText());
+        model.setTenNV(txtHovaten.getText());
+        model.setMatKhau(new String(txtMatKhau.getPassword()));
+       
+        return model;
+    }
+
+    void setStatus(boolean insertable) {
+        txtManv.setEditable(insertable);
+        btnThem.setEnabled(insertable);
+
+        boolean first = this.index > 0;
+        boolean last = this.index < tblGridView.getRowCount() - 1;
+        btnFirst.setEnabled(!insertable && first);
+        btnPrev.setEnabled(!insertable && first);
+        btnNext.setEnabled(!insertable && last);
+        btnLast.setEnabled(!insertable && last);
+    }
+    
     public NhanVienFrame() {
         initComponents();
+        init();
     }
 
     /**
@@ -51,6 +212,11 @@ public class NhanVienFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         btnThem.setText("THÊM");
         btnThem.addActionListener(new java.awt.event.ActionListener() {
@@ -152,7 +318,7 @@ public class NhanVienFrame extends javax.swing.JFrame {
 
             },
             new String [] {
-                "MÃ NV", "MẬT KHẨU", "HỌ VÀ TÊN"
+                "MÃ NV", "HỌ VÀ TÊN", "MẬT KHẨU"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -270,29 +436,30 @@ public class NhanVienFrame extends javax.swing.JFrame {
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
         // TODO add your handling code here:
-     
+     insert();
 
     }//GEN-LAST:event_btnThemActionPerformed
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
         // TODO add your handling code here:
-        
+        update();
     }//GEN-LAST:event_btnSuaActionPerformed
 
     private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
 
         // TODO add your handling code here:
-        
+        delete();
     }//GEN-LAST:event_btnXoaActionPerformed
 
     private void btnMoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoiActionPerformed
         // TODO add your handling code here:
-        
+        clear();
     }//GEN-LAST:event_btnMoiActionPerformed
 
     private void btnFirstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFirstActionPerformed
         // TODO add your handling code here:
-       
+       this.index = 0;
+        this.edit();
     }//GEN-LAST:event_btnFirstActionPerformed
 
     private void txtXacnhanmkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtXacnhanmkActionPerformed
@@ -301,24 +468,39 @@ public class NhanVienFrame extends javax.swing.JFrame {
 
     private void tblGridViewMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblGridViewMouseClicked
         // TODO add your handling code here:
-
+ if (evt.getClickCount() == 2) {
+            this.index = tblGridView.rowAtPoint(evt.getPoint());
+            if (this.index >= 0) {
+                this.edit();
+                tabs.setSelectedIndex(0);
+            }
+        }
        
     }//GEN-LAST:event_tblGridViewMouseClicked
 
     private void btnPrevActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrevActionPerformed
         // TODO add your handling code here:
-        
+        this.index--;
+        this.edit();
     }//GEN-LAST:event_btnPrevActionPerformed
 
     private void btnNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNextActionPerformed
         // TODO add your handling code here:
-        
+         this.index++;
+        this.edit();
     }//GEN-LAST:event_btnNextActionPerformed
 
     private void btnLastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLastActionPerformed
         // TODO add your handling code here:
-       
+        this.index = tblGridView.getRowCount() - 1;
+        this.edit();
     }//GEN-LAST:event_btnLastActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+          this.load();
+        this.setStatus(true);
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments

@@ -30,12 +30,13 @@ public class MainFrame extends javax.swing.JFrame {
        
         new DangNhapDialog(this, true).setVisible(true);
         initComponents();
-     
+        init();
     }
 
     
     void init() {
-      
+        setSize(600,600);
+        setLocationRelativeTo(null);
     }
 
     void openLogin() {

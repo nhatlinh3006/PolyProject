@@ -5,6 +5,16 @@
  */
 package GiaoDien;
 
+import DAO.DichVuDAO;
+import DAO.KhachHangDAO;
+import Model.DichVu;
+import Model.KhachHang;
+import help.DialogHelper;
+import help.ShareHelper;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Admin
@@ -16,6 +26,142 @@ public class KhachHangFrame extends javax.swing.JFrame {
      */
     public KhachHangFrame() {
         initComponents();
+        init();
+    }
+
+    void init() {
+         setSize(600,600);
+        setLocationRelativeTo(null);
+    }
+
+    int index = 0;
+    KhachHangDAO dao = new KhachHangDAO();
+
+    void load() {
+        DefaultTableModel model = (DefaultTableModel) tblGridView.getModel();
+        model.setRowCount(0);
+        try {
+            List<KhachHang> list = dao.select();
+            for (KhachHang kh : list) {
+                Object[] row = {
+                    kh.getMaKH(),
+                    kh.getTenTK(),
+                    kh.getMatKhau()};
+                model.addRow(row);
+            }
+        } catch (Exception e) {
+            System.out.println("er"+e);
+            DialogHelper.alert(this, "Lỗi truy vấn dữ liệu!");
+        }
+    }
+
+    public boolean kt() {
+        if (txtMaKH.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "MaKH ko dc bo trong");
+            return false;
+        }
+        if (txtMatKhau.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mat Khau ko dc bo trong");
+            return false;
+        }
+        if (txtTenTK.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ten Tai Khoan ko dc bo trong");
+            return false;
+        }
+
+        return true;
+    }
+
+    void insert() {
+
+        if (kt()) {
+            KhachHang model = getModel();
+            try {
+                dao.insert(model);
+                this.load();
+                this.clear();
+                DialogHelper.alert(this, "Thêm mới thành công!");
+            } catch (Exception e) {
+                DialogHelper.alert(this, "Thêm mới thất bại!");
+            }
+        }
+    }
+
+    void update() {
+        if (kt()) {
+            KhachHang model = getModel();
+            try {
+                dao.update(model);
+                this.load();
+                DialogHelper.alert(this, "Cập nhật thành công!");
+            } catch (Exception e) {
+                DialogHelper.alert(this, "Cập nhật thất bại!");
+            }
+        }
+    }
+
+    void delete() {
+        if (DialogHelper.confirm(this, "Bạn thực sự muốn xóa Khach Hang này?")) {
+            String makh = txtMaKH.getText();
+            try {
+                dao.delete(makh);
+                this.load();
+                this.clear();
+                DialogHelper.alert(this, "Xóa thành công!");
+            } catch (Exception e) {
+                DialogHelper.alert(this, "Xóa thất bại!");
+            }
+        }
+    }
+
+    void edit() {
+        try {
+            String makh = (String) tblGridView.getValueAt(this.index, 0);
+            KhachHang model = dao.findById(makh);
+            if (model != null) {
+                this.setModel(model);
+                this.setStatus(false);
+            }
+        } catch (Exception e) {
+            DialogHelper.alert(this, "Lỗi truy vấn dữ liệu!");
+        }
+    }
+
+    void clear() {
+//        this.setModel(new NhanVien());
+//        this.setStatus(true);
+        txtMaKH.setText("");
+        txtTenTK.setText("");
+        txtMatKhau.setText("");
+
+    }
+
+    void setModel(KhachHang model) {
+        txtMaKH.setText(model.getMaKH());
+        txtTenTK.setText(model.getTenTK());
+        txtMatKhau.setText(model.getMatKhau());
+
+    }
+
+    KhachHang getModel() {
+        KhachHang model = new KhachHang();
+        model.setMaKH(txtMaKH.getText());
+        model.setTenTK(txtTenTK.getText());
+        model.setMatKhau(txtMatKhau.getText());
+
+        return model;
+    }
+
+    void setStatus(boolean insertable) {
+        txtMaKH.setEditable(insertable);
+        btnThem.setEnabled(insertable);
+
+        boolean first = this.index > 0;
+        boolean last = this.index < tblGridView.getRowCount() - 1;
+        btnFirst.setEnabled(!insertable && first);
+        btnPrev.setEnabled(!insertable && first);
+        btnNext.setEnabled(!insertable && last);
+        btnLast.setEnabled(!insertable && last);
     }
 
     /**
@@ -38,17 +184,22 @@ public class KhachHangFrame extends javax.swing.JFrame {
         tabs = new javax.swing.JTabbedPane();
         pnlEdit = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        txtManv = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         txtMatKhau = new javax.swing.JPasswordField();
-        txtXacnhanmk = new javax.swing.JPasswordField();
+        txtMaKH = new javax.swing.JTextField();
+        txtTenTK = new javax.swing.JTextField();
         pnlList = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblGridView = new javax.swing.JTable();
         btnPrev = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         btnNext.setText(">");
         btnNext.addActionListener(new java.awt.event.ActionListener() {
@@ -107,15 +258,9 @@ public class KhachHangFrame extends javax.swing.JFrame {
 
         jLabel2.setText("MÃ KHÁCH HÀNG");
 
-        jLabel3.setText("MẬT KHẨU");
+        jLabel3.setText("TÊN TÀI KHOẢN");
 
-        jLabel4.setText("TÊN TÀI KHOẢN");
-
-        txtXacnhanmk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtXacnhanmkActionPerformed(evt);
-            }
-        });
+        jLabel4.setText("MẬT KHẨU");
 
         javax.swing.GroupLayout pnlEditLayout = new javax.swing.GroupLayout(pnlEdit);
         pnlEdit.setLayout(pnlEditLayout);
@@ -124,34 +269,37 @@ public class KhachHangFrame extends javax.swing.JFrame {
             .addGroup(pnlEditLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtManv)
-                    .addGroup(pnlEditLayout.createSequentialGroup()
-                        .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(txtXacnhanmk, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
-                                .addComponent(txtMatKhau, javax.swing.GroupLayout.Alignment.LEADING)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4)
+                    .addComponent(txtMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, 553, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtTenTK, javax.swing.GroupLayout.PREFERRED_SIZE, 541, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlEditLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(txtMaKH)
+                    .addContainerGap()))
         );
         pnlEditLayout.setVerticalGroup(
             pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlEditLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtManv, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(56, 56, 56)
                 .addComponent(jLabel3)
                 .addGap(18, 18, 18)
-                .addComponent(txtMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtTenTK, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtXacnhanmk, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlEditLayout.createSequentialGroup()
+                    .addGap(46, 46, 46)
+                    .addComponent(txtMaKH, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(146, Short.MAX_VALUE)))
         );
 
         tabs.addTab("CẬP NHẬT", pnlEdit);
@@ -161,7 +309,7 @@ public class KhachHangFrame extends javax.swing.JFrame {
 
             },
             new String [] {
-                "MÃ KH", "MẬT KHẨU", "TÊN TK"
+                "MÃ KH", "TEN TK", "MAT KHAU"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -192,7 +340,7 @@ public class KhachHangFrame extends javax.swing.JFrame {
             pnlListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlListLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -260,53 +408,65 @@ public class KhachHangFrame extends javax.swing.JFrame {
 
     private void btnNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNextActionPerformed
         // TODO add your handling code here:
-
+        this.index++;
+        this.edit();
     }//GEN-LAST:event_btnNextActionPerformed
 
     private void btnLastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLastActionPerformed
         // TODO add your handling code here:
-
+        this.index = tblGridView.getRowCount() - 1;
+        this.edit();
     }//GEN-LAST:event_btnLastActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
         // TODO add your handling code here:
-
+        insert();
     }//GEN-LAST:event_btnThemActionPerformed
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
         // TODO add your handling code here:
-
+        update();
     }//GEN-LAST:event_btnSuaActionPerformed
 
     private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
 
         // TODO add your handling code here:
-
+        delete();
     }//GEN-LAST:event_btnXoaActionPerformed
 
     private void btnMoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMoiActionPerformed
         // TODO add your handling code here:
-
+        clear();
     }//GEN-LAST:event_btnMoiActionPerformed
 
     private void btnFirstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFirstActionPerformed
         // TODO add your handling code here:
-
+        this.index = 0;
+        this.edit();
     }//GEN-LAST:event_btnFirstActionPerformed
-
-    private void txtXacnhanmkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtXacnhanmkActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtXacnhanmkActionPerformed
 
     private void tblGridViewMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblGridViewMouseClicked
         // TODO add your handling code here:
-
+        if (evt.getClickCount() == 2) {
+            this.index = tblGridView.rowAtPoint(evt.getPoint());
+            if (this.index >= 0) {
+                this.edit();
+                tabs.setSelectedIndex(0);
+            }
+        }
     }//GEN-LAST:event_tblGridViewMouseClicked
 
     private void btnPrevActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrevActionPerformed
         // TODO add your handling code here:
-
+        this.index--;
+        this.edit();
     }//GEN-LAST:event_btnPrevActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        this.load();
+        this.setStatus(true);
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments
@@ -361,8 +521,8 @@ public class KhachHangFrame extends javax.swing.JFrame {
     private javax.swing.JPanel pnlList;
     private javax.swing.JTabbedPane tabs;
     private javax.swing.JTable tblGridView;
-    private javax.swing.JTextField txtManv;
+    private javax.swing.JTextField txtMaKH;
     private javax.swing.JPasswordField txtMatKhau;
-    private javax.swing.JPasswordField txtXacnhanmk;
+    private javax.swing.JTextField txtTenTK;
     // End of variables declaration//GEN-END:variables
 }

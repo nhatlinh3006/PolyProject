@@ -10,10 +10,7 @@ import Model.NhanVien;
 import help.DialogHelper;
 import help.ShareHelper;
 
-/**
- *
- * @author Admin
- */
+
 public class DangNhapDialog extends javax.swing.JDialog {
 
     /**
@@ -22,10 +19,12 @@ public class DangNhapDialog extends javax.swing.JDialog {
     public DangNhapDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        init();
     }
     NhanVienDAO dao = new NhanVienDAO();
 
     void init() {
+        
         setLocationRelativeTo(null);
     }
 

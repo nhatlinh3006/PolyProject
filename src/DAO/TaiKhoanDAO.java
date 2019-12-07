@@ -72,7 +72,7 @@ public class TaiKhoanDAO {
     private TaiKhoan readFromResultSet(ResultSet rs) throws SQLException {
         TaiKhoan model = new TaiKhoan();
         model.setMaTK(rs.getString("MaTK"));
-        model.setTenTK(rs.getString("TenNV"));
+        model.setTenTK(rs.getString("TenTK"));
         model.setMatKhau(rs.getString("MatKhau")); 
         return model;
     }
